@@ -36,6 +36,7 @@
 #include "detect-engine-port.h"
 
 #include "flow.h"
+#include "flow-hash.h"
 
 #include "util-validate.h"
 #include "util-unittest.h"
@@ -178,6 +179,19 @@ int DecodeVXLAN(ThreadVars *tv, DecodeThreadVars *dtv, Packet *p,
             break;
         case VXLAN_RES_CHECK_PERMISSIVE:
             break;
+    }
+
+    /* Check if this is a legitimate VXLAN flow by verifying it's unidirectional. */
+    Flow *f = FlowGetExistingFlowFromPacket(p);
+    if (f != NULL) {
+        uint16_t flow_dp = FLOW_GET_DP(f);
+        uint32_t reverse_pkt_cnt = f->tosrcpktcnt;
+        FLOWLOCK_UNLOCK(f);
+
+        /* If we see traffic in the reverse direction or the flow's destination port doesn't match
+         * the current packet's destination port, this is not valid VXLAN. */
+        if (flow_dp != p->dp || reverse_pkt_cnt > 0)
+            return TM_ECODE_FAILED;
     }
 
 #if DEBUG
