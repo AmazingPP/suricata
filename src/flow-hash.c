@@ -1021,6 +1021,36 @@ static inline bool FlowCompareKey(Flow *f, FlowKey *key)
     return CmpFlowKey(f, key);
 }
 
+/** \brief Look for existing Flow using a Packet
+ *
+ * Hash retrieval function for flows. Looks up the hash bucket containing the
+ * flow pointer. Then compares the packet with the found flow to see if it is
+ * the flow we need. If it isn't, walk the list until the right flow is found.
+ *
+ *  \param p Packet to look for
+ *  \retval f *LOCKED* flow or NULL
+ */
+Flow *FlowGetExistingFlowFromPacket(const Packet *p)
+{
+    const uint32_t hash = p->flow_hash;
+    FlowBucket *fb = &flow_hash[hash % flow_config.hash_size];
+    FBLOCK_LOCK(fb);
+    SCLogDebug("fb %p fb->head %p", fb, fb->head);
+
+    for (Flow *f = fb->head; f != NULL; f = f->next) {
+        /* see if this is the flow we are looking for */
+        if (FlowCompare(f, p)) {
+            /* found our flow, lock & return */
+            FLOWLOCK_WRLOCK(f);
+            FBLOCK_UNLOCK(fb);
+            return f;
+        }
+    }
+
+    FBLOCK_UNLOCK(fb);
+    return NULL;
+}
+
 /** \brief Look for existing Flow using a flow id value
  *
  * Hash retrieval function for flows. Looks up the hash bucket containing the
