@@ -1003,6 +1003,7 @@ typedef struct DecodeThreadVars_
     uint16_t counter_vlan_qinqinq;
     uint16_t counter_vxlan;
     uint16_t counter_vntag;
+    uint16_t counter_etag;
     uint16_t counter_ieee8021ah;
     uint16_t counter_pppoe;
     uint16_t counter_teredo;
@@ -1103,6 +1104,7 @@ enum DecodeTunnelProto {
     DECODE_TUNNEL_ERSPANII,
     DECODE_TUNNEL_ERSPANI,
     DECODE_TUNNEL_VLAN,
+    DECODE_TUNNEL_ETAG,
     DECODE_TUNNEL_IPV4,
     DECODE_TUNNEL_IPV6,
     DECODE_TUNNEL_IPV6_TEREDO, /**< separate protocol for stricter error handling */
@@ -1165,6 +1167,7 @@ int DecodeMPLS(ThreadVars *, DecodeThreadVars *, Packet *, const uint8_t *, uint
 int DecodeERSPAN(ThreadVars *, DecodeThreadVars *, Packet *, const uint8_t *, uint32_t);
 int DecodeERSPANTypeI(ThreadVars *, DecodeThreadVars *, Packet *, const uint8_t *, uint32_t);
 int DecodeCHDLC(ThreadVars *, DecodeThreadVars *, Packet *, const uint8_t *, uint32_t);
+int DecodeETAG(ThreadVars *, DecodeThreadVars *, Packet *, const uint8_t *, uint32_t);
 int DecodeTEMPLATE(ThreadVars *, DecodeThreadVars *, Packet *, const uint8_t *, uint32_t);
 int DecodeNSH(ThreadVars *, DecodeThreadVars *, Packet *, const uint8_t *, uint32_t);
 int DecodeARP(ThreadVars *, DecodeThreadVars *, Packet *, const uint8_t *, uint32_t);
@@ -1501,6 +1504,9 @@ static inline bool DecodeNetworkLayer(ThreadVars *tv, DecodeThreadVars *dtv,
             break;
         case ETHERNET_TYPE_VNTAG:
             DecodeVNTag(tv, dtv, p, data, len);
+            break;
+        case ETHERNET_TYPE_ETAG:
+            DecodeETAG(tv, dtv, p, data, len);
             break;
         case ETHERNET_TYPE_NSH:
             DecodeNSH(tv, dtv, p, data, len);

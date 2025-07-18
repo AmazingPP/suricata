@@ -198,6 +198,8 @@ static int DecodeTunnel(ThreadVars *tv, DecodeThreadVars *dtv, Packet *p, const 
             return DecodeVLAN(tv, dtv, p, pkt, len);
         case DECODE_TUNNEL_ETHERNET:
             return DecodeEthernet(tv, dtv, p, pkt, len);
+        case DECODE_TUNNEL_ETAG:
+            return DecodeETAG(tv, dtv, p, pkt, len);
         case DECODE_TUNNEL_ERSPANII:
             return DecodeERSPAN(tv, dtv, p, pkt, len);
         case DECODE_TUNNEL_ERSPANI:
@@ -662,6 +664,7 @@ void DecodeRegisterPerfCounters(DecodeThreadVars *dtv, ThreadVars *tv)
     dtv->counter_vlan_qinqinq = StatsRegisterCounter("decoder.vlan_qinqinq", tv);
     dtv->counter_vxlan = StatsRegisterCounter("decoder.vxlan", tv);
     dtv->counter_vntag = StatsRegisterCounter("decoder.vntag", tv);
+    dtv->counter_etag = StatsRegisterCounter("decoder.etag", tv);
     dtv->counter_ieee8021ah = StatsRegisterCounter("decoder.ieee8021ah", tv);
     dtv->counter_teredo = StatsRegisterCounter("decoder.teredo", tv);
     dtv->counter_ipv4inipv4 = StatsRegisterCounter("decoder.ipv4_in_ipv4", tv);

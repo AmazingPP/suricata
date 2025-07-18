@@ -50,6 +50,7 @@
                                               * Cisco Fabric Path */
 #define ETHERNET_TYPE_NSH 0x894F
 #define ETHERNET_TYPE_VNTAG 0x8926 /* 802.1Qbh */
+#define ETHERNET_TYPE_ETAG 0x893F /* 802.1BR */
 
 typedef struct EthernetHdr_ {
     uint8_t eth_dst[6];

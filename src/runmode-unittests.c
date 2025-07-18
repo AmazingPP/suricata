@@ -108,6 +108,7 @@
 #include "tm-modules.h"
 #include "tmqh-packetpool.h"
 #include "decode-chdlc.h"
+#include "decode-etag.h"
 #include "decode-geneve.h"
 #include "decode-nsh.h"
 #include "decode-pppoe.h"
@@ -153,6 +154,7 @@ static void RegisterUnittests(void)
     DecodePPPRegisterTests();
     DecodeVLANRegisterTests();
     DecodeVNTagRegisterTests();
+    DecodeETAGRegisterTests();
     DecodeGeneveRegisterTests();
     DecodeVXLANRegisterTests();
     DecodeRawRegisterTests();
